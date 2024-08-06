@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Projek Simulasi Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+        }
+        #container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+        #title {
+            margin-bottom: 20px;
+        }
+        #quiz {
+            padding: 20px;
+            background-color: #f0f8ff;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #quiz h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+        .answer-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .answer-container input[type="radio"] {
+            display: none;
+        }
+        .answer-container label {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 2px solid #007bff;
+            border-radius: 25px;
+            background-color: #fff;
+            color: #007bff;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 16px;
+            margin-left: 10px;
+            width: 100%;
+        }
+        .answer-container input[type="radio"]:checked + label {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .answer-container input[type="radio"]:focus + label {
+            border-color: #0056b3;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            margin-bottom: 10px;
+        }
+        .button:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        @media only screen and (max-width: 768px) {
+            #container {
+                width: 90%;
+                padding: 10px;
+            }
+            .button {
+                width: 60%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id='container'>
+        <div id='title'>
+            <h1>EjaKata Uji pemahamanmu tentang tata bahasa</h1>
+        </div>
+        <div id='quiz'></div>
+        <div class='button' id='next'><a href='#'>Next</a></div>
+        <div class='button' id='prev'><a href='#'>Prev</a></div>
+        <div class='button' id='start'><a href='#'>Start Over</a></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Manakah kalimat yang ejaannya benar?",
+                choices: [
+                    "Dia berkata, \"Saya akan pergi ke taman besok.\"",
+                    "Dia berkata \"Saya akan pergi ke taman besok.\"",
+                    "Dia berkata, \"Saya akan pergi ke taman besok\".",
+                    "Dia berkata \"Saya akan pergi ke taman besok\"."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "Kalimat manakah yang menggunakan tanda baca dengan benar?",
+                choices: [
+                    "Saya pergi ke pasar, dan membeli sayur.",
+                    "Saya pergi ke pasar dan membeli sayur.",
+                    "Saya pergi ke pasar dan, membeli sayur.",
+                    "Saya pergi ke pasar; dan membeli sayur."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Kalimat manakah yang ejaannya benar?",
+                choices: [
+                    "Kami akan belajar matematika, bahasa Inggris, dan sejarah.",
+                    "Kami akan belajar matematika bahasa Inggris dan sejarah.",
+                    "Kami akan belajar matematika, bahasa Inggris dan sejarah.",
+                    "Kami akan belajar matematika bahasa"
+                ],
+                correctAnswer: 0
+            }
+        ]; 
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            const question = questions[currentQuestion];
+
+            quizContainer.innerHTML = `<h2>${question.question}</h2>`;
+            question.choices.forEach((choice, index) => {
+                quizContainer.innerHTML += `
+                <div class="answer-container">
+                    <input type="radio" name="answer" value="${index}" id="choice${index}">
+                    <label for="choice${index}">${choice}</label>
+                </div>`;
+            });
+        }
+
+        function showNextQuestion() {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (selectedAnswer && parseInt(selectedAnswer.value) === questions[currentQuestion].correctAnswer) {
+                score++;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = `<h2>Your Score: ${score}/${questions.length}</h2>`;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        document.getElementById('next').addEventListener('click', showNextQuestion);
+        document.getElementById('prev').addEventListener('click', showPrevQuestion);
+        document.getElementById('start').addEventListener('click', restartQuiz);
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
